@@ -1,10 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package appcliente;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,11 +23,62 @@ package appcliente;
  */
 public class FrmPedidoCliente extends javax.swing.JFrame {
 
+    int indice = 0;
+
     /**
      * Creates new form FrmPedidoCliente
      */
     public FrmPedidoCliente() {
         initComponents();
+        this.setLocationRelativeTo(null); //Centrar Formulario
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Date currentDate = new Date();
+        String lastdate = formatter.format(currentDate);
+        txtFechaPedido.setText(lastdate);
+        txtTotalPedido.setText("0");
+        
+        txtFechaEntrega.setMinSelectableDate(currentDate);
+    }
+
+    private void CargaDatos() {
+        javax.swing.table.DefaultTableModel dtm = (javax.swing.table.DefaultTableModel) tblPedidos.getModel();
+        //CAPTURA EL FORMATO DE LA TABLA
+        int nro_fila = dtm.getRowCount();
+
+        String items[] = comboArticulo.getSelectedItem().toString().split("-");
+        String coditem = items[0].trim();
+        String descri = items[1].trim();
+        String precio = items[2].trim();
+        String cantidad = txtCantidad.getText();
+        String total;
+        int tot = 0;
+        int pre = Integer.parseInt(precio);
+        int can = Integer.parseInt(cantidad);
+        tot = pre * can;//Calcula la contidad total del precio de la mercaderia.
+        total = String.valueOf(tot);
+        if (nro_fila > 0) {
+            int fila = 0;
+            while (nro_fila > fila) {
+                int codig = Integer.parseInt(coditem);
+                int merca = Integer.parseInt(dtm.getValueAt(fila, 0).toString());
+                if (codig == merca) {
+                    JOptionPane.showMessageDialog(null, "Ya existe en la grilla el Item seleccionado, Verifique...", "ATENCION", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                fila++;
+            }
+        }
+        dtm.addRow(new Object[]{coditem, descri, cantidad, precio, total});
+
+        int total2 = pre * can;
+        int total1 = Integer.parseInt(txtTotalPedido.getText());
+        int total3 = total1 + total2;
+        txtTotalPedido.setText(String.valueOf(total3));
+
+    }
+
+    private void verificarCampos() {
+
     }
 
     /**
@@ -28,21 +90,429 @@ public class FrmPedidoCliente extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        comboCliente = new javax.swing.JComboBox();
+        jLabel4 = new javax.swing.JLabel();
+        txtFechaEntrega = new com.toedter.calendar.JDateChooser();
+        jLabel5 = new javax.swing.JLabel();
+        comboVendedor = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
+        comboMoneda = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        txtFechaPedido = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        comboArticulo = new javax.swing.JComboBox();
+        txtCantidad = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        btnAgregar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblPedidos = new javax.swing.JTable();
+        jLabel7 = new javax.swing.JLabel();
+        txtTotalPedido = new javax.swing.JTextField();
+        btnSalir = new javax.swing.JButton();
+        btnEnviar = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel1.setText("Formulario Pedido de Cliente");
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setText("Cliente");
+
+        comboCliente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        comboCliente.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1 - Ruben Gonzalez", "2 - Patricia Diaz", "3 - Alma Rodriguez", "4 - Victoria Gomez", "5 - Adrian Rodriguez" }));
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel4.setText("Fecha entrega");
+
+        txtFechaEntrega.setDateFormatString("yyyy-MM-dd");
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setText("Vendedor");
+
+        comboVendedor.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        comboVendedor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Sergio Pastor", "Vanesa Planas", "Rafael Souto", "Ursula Llorens", "Nora Vilar" }));
+        comboVendedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboVendedorActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel6.setText("Modena");
+
+        comboMoneda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        comboMoneda.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Guaraní", "Dolar", "Peso argentino", "Peso mexicano", "Peso chileno" }));
+        comboMoneda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboMonedaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel6))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtFechaEntrega, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(comboMoneda, 0, 185, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtFechaEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(comboCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(comboVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboMoneda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6)))
+                .addContainerGap(52, Short.MAX_VALUE))
+        );
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setText("Fecha");
+
+        txtFechaPedido.setEditable(false);
+        txtFechaPedido.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtFechaPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFechaPedidoActionPerformed(evt);
+            }
+        });
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel8.setText("Artículo");
+
+        comboArticulo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        comboArticulo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1 - Panasonic Pantalla LCD - 500000", "2 - Sony Camara digital DSC-W320B - 1500000", "3 - Apple iPod shuffle - 2000000", "4 - Sony Notebook Z110 - 3000000", "5 - Hewlett Packard Multifuncional F2280 - 2500000" }));
+
+        txtCantidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtCantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCantidadActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel9.setText("Cantidad");
+
+        btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
+
+        btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jLabel8)
+                .addGap(18, 18, 18)
+                .addComponent(comboArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(51, 51, 51)
+                .addComponent(jLabel9)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(btnAgregar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnEliminar))
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(33, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(comboArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgregar)
+                    .addComponent(btnEliminar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tblPedidos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Id Articulo", "Descripcion", "Cantidad", "Precio Unitario", "Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblPedidos);
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel7.setText("Total Pedido");
+
+        txtTotalPedido.setEditable(false);
+        txtTotalPedido.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtTotalPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtTotalPedidoActionPerformed(evt);
+            }
+        });
+
+        btnSalir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
+
+        btnEnviar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnEnviar.setText("Enviar Pedido");
+        btnEnviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEnviarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(80, 80, 80)
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtFechaPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnSalir)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEnviar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtTotalPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3)
+                    .addComponent(txtFechaPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTotalPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(btnSalir)
+                    .addComponent(btnEnviar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtFechaPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaPedidoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFechaPedidoActionPerformed
+
+    private void txtTotalPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalPedidoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtTotalPedidoActionPerformed
+
+    private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCantidadActionPerformed
+
+    private void comboVendedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboVendedorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboVendedorActionPerformed
+
+    private void comboMonedaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMonedaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboMonedaActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        int mensaje = JOptionPane.showConfirmDialog(null, "Desea Salir?", "Mensaje", JOptionPane.YES_NO_OPTION);
+        if (mensaje == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        javax.swing.table.DefaultTableModel dtm = (javax.swing.table.DefaultTableModel) tblPedidos.getModel();
+        indice = tblPedidos.getSelectedRow();
+        if (indice == -1) {
+            JOptionPane.showMessageDialog(null, "No ha seleccionado el Detalle a borrar", "Atención", JOptionPane.WARNING_MESSAGE);
+        } else {
+            int precio = Integer.parseInt(tblPedidos.getValueAt(indice, 3).toString());
+            int canti = Integer.parseInt(tblPedidos.getValueAt(indice, 2).toString());
+            int total1 = precio * canti;
+            int total2 = Integer.parseInt(txtTotalPedido.getText());
+            int total3 = total2 - total1;
+            txtTotalPedido.setText(String.valueOf(total3));
+            dtm.removeRow(indice);
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        if ((txtCantidad.getText().trim().equals(""))) {
+            JOptionPane.showMessageDialog(null, "La Cantidad se encuentra vacia..", "Atención", JOptionPane.WARNING_MESSAGE);
+            txtCantidad.requestFocus();
+        } else {
+            CargaDatos();
+            txtCantidad.setText("");
+        }
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
+
+        if (txtFechaEntrega.getDate() == null || tblPedidos.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "VERIFIQUE CAMPOS VACÍOS Y QUE EXISTA DETALLE DE PEDIDO", "ATENCION", JOptionPane.WARNING_MESSAGE);
+        } else {
+            Object[] opciones = {"SI", "NO"};//DIALOGO SI Y NO
+            int msn = JOptionPane.showConfirmDialog(this, "Desea Enviar?", "Cuestionario al Usuario", JOptionPane.YES_NO_OPTION);
+            if (msn == JOptionPane.YES_OPTION) {
+                String cmbcliente[] = comboCliente.getSelectedItem().toString().split("-");
+                String cmbarticulo[] = comboArticulo.getSelectedItem().toString().split("-");
+                try {
+                    URL url = new URL("http://127.0.0.1:8000/pedidos/guardar");
+                    Map<String, Object> params = new LinkedHashMap<>();
+
+                    params.put("idCliente", cmbcliente[0].toString());
+                    params.put("nombreCliente", cmbcliente[1].toString());
+                    params.put("fechaPedido", txtFechaPedido.getText());
+                    params.put("fechaEntrega", txtFechaEntrega.getDate());
+                    params.put("nombreVendedor", comboVendedor.getSelectedItem());
+                    params.put("moneda", comboMoneda.getSelectedItem());
+                    params.put("totalPedido", txtTotalPedido.getText());
+
+                    int can_det = tblPedidos.getRowCount();
+                    for (int i = 0; i < can_det; i++) {
+                        String cod = tblPedidos.getValueAt(i, 0).toString();
+                        String des = tblPedidos.getValueAt(i, 1).toString();
+                        String pre = tblPedidos.getValueAt(i, 3).toString();
+                        String cant = tblPedidos.getValueAt(i, 2).toString();
+                        String totaldet = tblPedidos.getValueAt(i, 4).toString();
+
+                        params.put("idArticulo", cod);
+                        params.put("descripcion", des);
+                        params.put("cantidad", cant);
+                        params.put("precioUnitario", pre);
+                        params.put("totalDetallePedido", totaldet);
+                    }
+
+                    StringBuilder postData = new StringBuilder();
+                    for (Map.Entry<String, Object> param : params.entrySet()) {
+                        if (postData.length() != 0) {
+                            postData.append('&');
+                        }
+                        postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                        postData.append('=');
+                        postData.append(URLEncoder.encode(String.valueOf(param.getValue()),
+                                "UTF-8"));
+                    }
+                    byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                    conn.setDoOutput(true);
+                    conn.getOutputStream().write(postDataBytes);
+
+                    Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                    for (int c = in.read(); c != -1; c = in.read()) {
+                        System.out.print((char) c);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Resultado de la transacción", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println(e.getMessage());
+                }
+                txtFechaEntrega.setCalendar(null);
+                txtTotalPedido.setText("0");
+                tblPedidos.selectAll();
+                int[] l = tblPedidos.getSelectedRows();
+                javax.swing.table.DefaultTableModel dtm = (javax.swing.table.DefaultTableModel) tblPedidos.getModel();
+                for (int i = l.length - 1; i >= 0; --i) {
+                    dtm.removeRow(l[i]);
+                }
+            }
+        }
+
+    }//GEN-LAST:event_btnEnviarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -58,16 +528,21 @@ public class FrmPedidoCliente extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmPedidoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmPedidoCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmPedidoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmPedidoCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmPedidoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmPedidoCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmPedidoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmPedidoCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -80,5 +555,30 @@ public class FrmPedidoCliente extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnEnviar;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JComboBox comboArticulo;
+    private javax.swing.JComboBox comboCliente;
+    private javax.swing.JComboBox comboMoneda;
+    private javax.swing.JComboBox comboVendedor;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblPedidos;
+    private javax.swing.JTextField txtCantidad;
+    private com.toedter.calendar.JDateChooser txtFechaEntrega;
+    private javax.swing.JTextField txtFechaPedido;
+    private javax.swing.JTextField txtTotalPedido;
     // End of variables declaration//GEN-END:variables
 }
